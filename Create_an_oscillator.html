@@ -1,1 +1,185 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <link rel="stylesheet" href="" />
+  </head>
+
+  <body>
+    <button id="btn_ONE">stop() Method</button>
+    <button id="btn_TWO">onended() Method</button>
+    <button id="btn_THREE">CLICK ME!!</button>
+    <button id="btn_FOUR">CLICK ME!!</button>
+    <button id="btn_FIVE">CLICK ME!!</button>
+    <button id="btn_SIX">CLICK ME!!</button>
+    <script>
+      /* ---------------------------------------------------------------
+Excerpt From
+JavaScript for Sound Artists: Learn to Code with the Web Audio API
+Turner, William
+------------------------------------------------------------------- */
+
+      /* --------- The AudioContext() Method --------- */
+
+      /*
+The Web Audio API is accessed by using a collection of properties and methods of an object that you create using the AudioContext() method:
+*/
+
+      //The "window" reference is required for this method to work in safari
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+      console.log(audioContext);
+
+      /*AudioContext() is a constructor that returns an object when you use the keyword new. Constructors and the new keyword are explained in Chapter 12. 
+
+For now, the important thing to understand is that AudioContext() returns an object containing all of the methods and properties that you use to access the Web Audio API.
+*/
+
+      /*   ---------------- Node Graphs ---------------  */
+
+      /*
+A node graph is a collection of nodes. A node in a node graph is an object that represents an audio input source, such as an oscillator, or an object designed to manipulate an audio input source, such as a filter. These nodes are connected together using a method named connect.
+*/
+
+      // The following code is an example of an oscillator node connected to a filter node.
+
+      //=>	var audioContext = new AudioContext();
+
+      /*
+1. Create oscillator and filter:
+
+=>	var oscillator = audioContext.createOscillator();
+=>	var filter = audioContext.createBiquadFilter();
+*/
+
+      /*
+2. Connect oscillator to filter
+ 
+=>	oscillator.connect(filter);
+*/
+
+      /*
+3. Connect filter to computer speakers
+
+=> filter.connect(audioContext.destination);
+
+*/
+
+      /*
+4. Start oscillator playing
+
+=>	oscillator.start(audioContext.currentTime);
+
+*/
+
+      /*
+In the previous code: 
+
+(1) The oscillator object is created using the createOscillator method of the audio context and stored in a variable named oscillator:
+
+==> var oscillator = audioContext.createOscillator();
+
+	
+(2) Next create a filter object in a similar way by invoking the createBiquadFilter method of audioContext:
+
+==> var filter = audioContext.createBiquadFilter();
+
+(3) Then connect the oscillator to the filter using connect():
+
+=>	oscillator.connect(filter);
+
+
+(4) The filter is then connected to a property named destination. The destination representsthe output of your computer’s audio system:
+
+=>	filter.connect(audioContext.destination);
+
+
+(5) Finally to start the oscillator playing, you use a method of the oscillator object named start():
+
+=>	oscillator.start(audioContext.currentTime);
+
+
+The start method takes one argument that determines the time the oscillator starts playing. 
+
+The value of audioContext.currentTime is the current time in seconds within the Web Audio API, starting when AudioContext was invoked.
+ (The topic of time is discussed in Chapter 20.)”
+
+*/
+
+      /* ------- Oscillators ----- */
+
+      /*
+Oscillators, like all Web Audio API nodes, have their own custom properties and methods. 
+The following methods and properties are discussed in this chapter. 
+
+**** METHODS:
+
+=> start()
+Starts oscillator playing
+
+=> stop()
+Stops oscillator playing
+
+=> onended()
+Executes a custom function when oscillator stops
+
+**** PROPERTIES:
+
+=>	"type"
+Sets the type of waveform assigned to the oscillator
+
+=>	"frequency"
+Sets the frequency value of the oscillator in hertz
+
+=>	"detune"
+Sets an offset of the current frequency value in cents
+
+*/
+
+      /* ------ The stop Method ------ */
+
+      /*
+The stop() method determines when an oscillator stops. 
+It takes one numeric argument that represents a time value in seconds. 
+
+The following code starts an oscillator playing 
+and stops it 3 seconds into the future.
+*/
+
+      //  Start playing and stop 3 seconds into the future.
+      btn_ONE.onclick = () => {
+        var oscillator = audioContext.createOscillator();
+
+        oscillator.connect(audioContext.destination);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 3);
+      };
+
+      /* -------- The onended Property ------- */
+
+      /*
+If you want to launch a function after the oscillator stop method has run, 
+you assign that function to the onended property. 
+
+The following code outputs the string “Oscillator has stopped” 
+to the console after its stop method completes.”
+*/
+
+      // Outputs the string “Oscillator has stopped” after its stop method completes.
+      btn_TWO.onclick = () => {
+        var oscillator = audioContext.createOscillator();
+
+        oscillator.connect(audioContext.destination);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 3);
+
+        oscillator.onended = function () {
+          alert("Oscillator has stopped");
+        };
+      };
+    </script>
+  </body>
+</html>
 
