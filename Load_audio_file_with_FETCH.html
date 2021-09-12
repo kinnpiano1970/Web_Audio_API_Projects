@@ -1,1 +1,41 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <link rel="stylesheet" href="" />
+
+    <style></style>
+  </head>
+
+  <body>
+    <button id="btn_play">PLAY ME!!</button>
+
+    <script>
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      let audio;
+
+      fetch("lead.wav")
+        .then((data) => data.arrayBuffer())
+        .then((arrayBuffer) => ctx.decodeAudioData(arrayBuffer))
+        .then((decodedAudio) => {
+          audio = decodedAudio;
+          console.log(audio);
+        });
+
+      function playBack(arguments) {
+        const playSound = ctx.createBufferSource();
+        console.log(playSound);
+        playSound.buffer = audio;
+        playSound.connect(ctx.destination);
+        playSound.start(ctx.currentTime);
+      }
+
+      btn_play.onclick = () => {
+        playBack();
+      };
+    </script>
+  </body>
+</html>
 
