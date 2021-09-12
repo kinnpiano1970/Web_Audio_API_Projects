@@ -1,1 +1,328 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+
+    <style>
+      body {
+        margin: 5%;
+        font-size: 25px;
+        font-family: "Verdana", sans-serif;
+        background-color: bisque;
+      }
+
+      #output {
+        border: 1px solid #999;
+        font-size: 30px;
+        color: red;
+      }
+
+      button {
+        font-size: 25px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <button id="btn_ONE">PLAY!!</button>
+    <button id="btn_TWO">PLAY!!</button>
+
+    <h3><i>"GET" </i>Requests</h3>
+    <p>
+      When you type a URL into a web browser and “go” to a website, the web
+      browser does not actually go anywhere. What actually happens is the
+      browser issues a command to the website server that initiates a download
+      of the HTML content and other files needed to view it.
+    </p>
+
+    <p>
+      This command is called a get request. The beauty of get requests is that
+      you can use them outside the context of typing a URL into a browser. In
+      other words, you can write code to run get requests behind the scenes.
+      This is how XMLHttpRequest is used to pull audio files into your
+      application—and why the first argument of the open method is “get”.
+    </p>
+
+    <p>
+      The second argument to the open method is the path to the file you want to
+      fetch. For this example, an MP3 file named snare.mp3 is imported.”
+    </p>
+
+    <h3>A Word on Audio File Type Compatibility</h3>
+    <p></p>
+    It is important to understand that audio file type compatibility is
+    dependent on which web browser you use. If you want your application to be
+    compatible with multiple web browsers, you have to include multiple audio
+    files of different formats and write conditional code to determine what
+    format to use based on the rendering browser. The three most popular audio
+    file formats for web browsers are WAV, OGG, and MP3. An audio file format
+    compatibility chart for various browsers is available here:
+    http://caniuse.com/#search=audio%20format.”
+    <p></p>
+    “The third argument to the open method determines whether the open operation
+    is done in a synchronous or asynchronous manner. The true value selects the
+    asynchronous setting, whereas false selects the synchronous setting.
+    Understanding the difference between synchronous and asynchronous code
+    execution is an in-depth topic and requires some explaining.”
+
+    <h3>Synchronous versus Asynchronous Code Execution</h3>
+
+    <p>
+      When the browser executes code, it does so from top to bottom. As a
+      result, a function that takes a long time to execute creates a noticeable
+      delay in the program itself. This is because the code is executing
+      synchronously.
+    </p>
+
+    <p>
+      When you use the XMLHttpRequest object to retrieve data synchronously from
+      a server, the time delay between making the get request and when the
+      actual data is returned can create a noticeable delay in the execution of
+      your program. This delay is particularly noticeable when you load a large
+      audio file and then have to wait for its entire contents to load into
+      memory before your program continues.”
+    </p>
+
+    <p>
+      Delays in execution are why doing such operations synchronously is
+      discouraged and doing them asynchronously is preferred. Working
+      asynchronously lets you run the open method while immediately allowing
+      your program to continue executing to completion. In the meantime, the
+      audio file continues to load behind the scenes, regardless of how long it
+      takes to complete. When the audio file is available (when it is done
+      loading), you can use it.
+    </p>
+
+    <p>
+      When code is executed in this manner, we say that it is nonblocking. Of
+      course, the downside of this is that if you have an audio file loading and
+      it is taking a long time, the user of your program might be wondering why
+      nothing is playing even though the page has rendered! This problem can be
+      remedied by presenting a message to users to warn them that they will have
+      to wait for the audio file to finish loading. In the meantime, they can
+      explore other parts of your application.”
+    </p>
+
+    <script type="text/javascript">
+      /*
+        The Two Steps to Loading an Audio File
+        Loading an audio file is done in two steps:
+        
+        (1) Store the audio file in a buffer using the XMLHttpRequest object.
+        
+        (2) Decode the buffer with decodeAudioData.
+        
+        In the first step, you use the built-in browser object named XMLHttpRequest to store the collected audio file in a buffer. This object is part of the web browser and is independent of the Web Audio API.
+        
+         A buffer is a small piece of internal memory used to store data so that it can be accessed quickly. Storing the file this way provides low latency playback and the ability to modify the raw waveform data, which is useful for some applications.
+         
+        In the second step, you use the decodeAudioData method to decode the audio file buffer you created in the first step. 
+        
+        After the Web Audio API has read and decoded the audio data, you can assign the object to a variable and reference it in the node graph for playback.
+        
+        The following example shows how you load a single audio file, after which you can play it back by clicking on the browser window:
+        
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)(); 
+        
+        var audioBuffer;
+        var getSound = new XMLHttpRequest();
+        getSound.open("get", "soundFileHere.wav", true);
+        getSound.responseType = "arraybuffer";
+        
+        getSound.onload = function() {
+          audioContext.decodeAudioData(getSound.response, function(buffer) {
+            audioBuffer = buffer;
+          });
+        };
+        
+        getSound.send();
+        
+        function playback() {
+          var playSound = audioContext.createBufferSource();
+          playSound.buffer = audioBuffer;
+          playSound.connect(audioContext.destination);
+          playSound.start(audioContext.currentTime);
+        }
+        */
+
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+
+      /* To make the audio buffer accessible to the rest of the program, 
+        It is assigned to a global variable*/
+
+      let audioBuffer;
+
+      /* ----- STEP ONE ----- 
+        The XMLHttpRequest Object
+        
+        The first step to importing an audio file is to create a new XMLHttpRequest object.
+         This object allows you to import data over the http protocol:  */
+
+      var getSound = new XMLHttpRequest();
+
+      /*
+        The XMLHttpRequest function invocation returns an object literal 
+        that is stored in a variable named getSound. This is done using the new keyword.
+         The important thing is to understand that XMLHttpRequest is a function that returns an object. 
+        
+        The XMLHttpRequest() object contains a large collection of built-in properties and methods. 
+        
+        For loading sound files, you need five of these methods:
+        
+        ■ open
+        
+        ■ responseType
+        
+        ■ onload
+        
+        ■ response
+        
+        ■ send
+        
+        */
+
+      /* ----- STEP TWO ----- 
+        
+        The next line of code uses the open method to fetch the audio file: */
+
+      getSound.open("get", "CMAJOR.wav", true);
+
+      /*
+        This method has three arguments.
+        To clearly understand the purpose of the first argument requires 
+        a brief explanation of a command called a get request 
+        (see HTML SECTION for explanation) 
+        
+        */
+
+      /* ----- STEP THREE ----- 
+        
+        “The next line of code sets a property called responseType to a value of arraybuffer.
+         The responseType property defines how the data you are importing is made available to your program: */
+
+      getSound.responseType = "arraybuffer";
+
+      /*
+        
+        Generally, the XMLHttpRequest object is used to fetch text files, and in those cases you might choose one of the other available responseType settings such as text or document. 
+        
+        For sound files, arraybuffer is used. This is a general container for binary data that is useful for audio files.
+        
+        */
+
+      /* ----- STEP FOUR ----- 
+        
+        The next line of code begins with an onload function 
+        that is invoked after the data (the audio file) has completed loading. 
+        
+        Within the onload function, decoding of the audio data 
+        takes place that makes it usable by the Web Audio API. 
+        
+        You do this with a method called decodeAudioData that takes two arguments. 
+        The first argument is a property called response that represents the 
+        loaded (and undecoded) audio data.
+        */
+
+      getSound.onload = function () {
+        audioContext.decodeAudioData(getSound.response, function (buffer) {
+          audioBuffer = buffer; // stored as global variable
+        });
+      };
+
+      /*
+        The second argument to the onload function is a callback function that 
+        allows you to capture the result of the decoded audio data and do something with it. 
+        
+        To capture the decoded file, you must pass it as an argument of the callback function.
+         In this case, the name given for this decoded information is buffer. 
+        
+        To make buffer accessible to the rest of the program, you can assign it to a global variable.”
+        
+        */
+
+      /* ----- STEP FOUR ----- 
+        
+        The last line is the send method. This method initiates the XMLHttpRequest.
+        */
+
+      getSound.send();
+
+      /* ----- STEP FOUR ----- 
+        Now that the audio file is loaded into a buffer, 
+        the playback function contains the required code to 
+        connect it to the node graph and eventually play it back.
+        */
+
+      function playback() {
+        /* The first line assigns a method called 
+            createBufferSource() to a variable. 
+            This method is used to create a buffer source 
+            node that is used for audio buffers. 
+            
+            createBufferSource() is like createOscillator(), 
+            but instead of being used to create oscillators, 
+            it is used to create a node that can play back 
+            the contents of an audio buffer. */
+
+        var playSound = audioContext.createBufferSource();
+
+        /* To inject the audio buffer (The audio that has 
+            just been decoded by the decodeAudioData() function) 
+            into the buffer source we just created, you need to assign 
+            it to a property of the  createBufferSource() function
+            named "buffer" */
+
+        playSound.buffer = audioBuffer;
+
+        /* Now connect the buffer to the audioConext.
+            destination... */
+
+        playSound.connect(audioContext.destination);
+
+        /* ...and set the start() time. In this case the start time
+            is set to the currentTime of of the audioContext, which means 
+            the sound will start playing immediately. */
+
+        playSound.start(audioContext.currentTime);
+      }
+
+      /* ----- STEP FIVE ----- 
+        As the Web Audio API requires a user action to start the 
+        audioContext, The last line of code is a button element 
+        that lets you play back the file when it is clicked */
+
+      btn_ONE.onclick = () => {
+        playback();
+      };
+
+      /* Processing the Audio Buffer with the Node Graph
+        
+        When the audio buffer is fed into the node graph, 
+        you can process it with its built-in effects. 
+        
+        In the following code, the node graph connection 
+        has been modified to include a property of the audio 
+        buffer named playbackRate. 
+        
+        This changes the playback speed of the sound. To double 
+        the speed, set the value to 2; to play the sound back at 
+        half speed, set the value to 0.5 */
+
+      function doubleRate() {
+        var playSound = audioContext.createBufferSource();
+        playSound.buffer = audioBuffer;
+        playSound.playbackRate.value = 2;
+        playSound.connect(audioContext.destination);
+        playSound.start(audioContext.currentTime);
+      }
+
+      btn_TWO.onclick = () => {
+        doubleRate();
+      };
+    </script>
+  </body>
+</html>
 
