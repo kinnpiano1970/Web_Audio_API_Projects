@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+
+    <style>
+      body {
+        font-size: 30px;
+        font-family: "Verdana", sans-serif;
+      }
+      #output {
+        border: 1px solid #999;
+        font-size: 30px;
+        color: red;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="main" class="main"></div>
+
+    <p id="output">pp</p>
+
+    <audio id="player" src="" type="audio/mpeg"></audio>
+
+    <button id="btnplay" class="btnplay">PLAY SONG!</button>
+    <button id="btnstop" class="btnplay">STOP SONG!</button>
+
+    <script type="text/javascript">
+      function audioContextCheck() {
+        if (typeof AudioContext !== "undefined") {
+          return new AudioContext();
+        } else if (typeof webkitAudioContext !== "undefined") {
+          return new webkitAudioContext();
+        } else if (typeof mozAudioContext !== "undefined") {
+          return new mozAudioContext();
+        } else {
+          throw new Error("AudioContext not supported!!");
+        }
+      }
+      var audioContext = audioContextCheck();
+
+      // get the audio element
+      const audioElement = document.querySelector("audio");
+      // get the play button
+      const playButton = document.querySelector(".btnplay");
+
+      // pass it into the audio context
+      const track = audioContext.createMediaElementSource(audioElement);
+
+      console.log(audioElement);
+
+      track.connect(audioContext.destination);
+
+      btnplay.onclick = () => {
+        // Browser policy restricts the audioContext from playnig until this resume method is called.
+
+        audioContext.resume();
+        audioElement.src = "A Taste Of Honey - Sukiyaki.mp3";
+        audioElement.play();
+      };
+
+      btnstop.onclick = () => {
+        audioElement.pause();
+        audioElement.currentTime = 0;
+      };
+
+      player.ontimeupdate = () => {
+        let time = audioElement.currentTime;
+
+        console.log(time.toFixed(0));
+      };
+    </script>
+  </body>
+</html>
 
