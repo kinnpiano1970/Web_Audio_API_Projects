@@ -1,1 +1,93 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="">
+</head>
 
+<body>
+    <button id="btnstart">START</button>
+    <button id="btnstop">STOP</button>
+    
+    <script>
+        function audioContextCheck() {
+
+	if (typeof AudioContext !== "undefined") {
+	
+		return new AudioContext();
+		
+	} else if (typeof webkitAudioContext !== "undefined") {
+
+		return new webkitAudioContext();	
+			
+	} else if (typeof mozAudioContext !== "undefined") {
+	
+		return new mozAudioContext();
+		
+	} else {
+		throw new Error('AudioContext not supported!!');		
+	}
+ 	
+	
+}
+var audioContext = audioContextCheck();
+
+// Create an oscillator and assign to a variable
+var osc = audioContext.createOscillator();
+// Change the volume with a GAIN NODE
+// The GAIN NODE will change the volume of any sound source connected to it.
+var gainOsc = audioContext.createGain();
+    // Set the type of osc
+    osc.type = "sine"; 
+    // There are 4 types of oscillators: sine, sawtooth, triangle, square
+    // set the frequency 
+    osc.frequency.value = 440;
+    // the detune can be used as an intermediary between fregeuncy values
+    // There are 100 cents between a half-step
+    osc.detune.value = 0;
+        
+// Connect the oscillator to the audio output of the computer
+/*UPDATE: I have added a GAIN NODE */
+// The CONNECT method is very important!!!
+// It lets you connect different INPUTS & OUTPUTS in the Web Audio API.
+// These input and outputs are called nodes.
+// Connect the oscillator to the gain node 
+// Then connect the gain node to the destination (the PC speakers)
+        
+/**** NOTE: I learned from the MDN website you can chain the source to the gainNode to the destination directly!!! **** LIKE THIS: */
+        
+osc.connect(gainOsc).connect(audioContext.destination)
+
+        
+gainOsc.gain.value = .5;
+btnstart.onclick=()=> {
+    
+    // Start the oscillator at the currentTime in referrence to when the audioContext was created
+    osc.start(audioContext.currentTime);
+    
+}
+
+        
+btnstop.onclick=()=> {
+    
+    osc.stop();
+    
+}
+    
+    
+/* 
+
+NOTE: When you create ocsillators they are intended to thrown away after each use!!!
+        Every time the button is clicked a new osc is created
+
+*/
+    
+    
+    
+    
+    
+    </script>
+</body>
+</html>
